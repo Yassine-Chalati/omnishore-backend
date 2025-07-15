@@ -1,0 +1,47 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: client-service
+#  datasource:
+#    url: jdbc:mysql://77.37.86.136:3306/ClientDB
+#    username: root
+#    password: 7952
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  jpa:
+#    database-platform: org.hibernate.dialect.MySQL5Dialect
+#    hibernate:
+#      ddl-auto: update
+#    show:
+#        sql: true
+  data:
+    mongodb:
+      uri: mongodb://admin:admin@69.62.106.98:27017/cvDB?authSource=admin
+  datasource:
+     url: jdbc:mysql://69.62.106.98:3306/cvDB
+     username: root
+     password: 7952
+     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+   hibernate:
+     ddl-auto: update
+
+   properties:
+     hibernate:
+       dialect: org.hibernate.dialect.MySQL8Dialect
+  show:
+    sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://69.62.106.98:9001
+          jwk-set-uri: http://69.62.106.98:9001/realms/Omnishore/protocol/openid-connect/certs
+
+minio:
+  url: http://69.62.106.98:7500
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-name: cv-bucket
