@@ -1,8 +1,11 @@
 package com.omnishore.cvtech.domain.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.omnishore.cvtech.client.ai.AiClient;
 import com.omnishore.cvtech.domain.entities.*;
 import com.omnishore.cvtech.domain.repositories.CvFileRepository;
+import com.omnishore.cvtech.domain.repositories.CvRawJsonRepository;
 import com.omnishore.cvtech.domain.repositories.CvStructuredRepository;
 import com.omnishore.cvtech.domain.services.CvService;
 import com.omnishore.cvtech.domain.services.MinioStorageService;
@@ -35,6 +38,8 @@ public class CvServiceImpl implements CvService {
     private CvStructuredRepository cvStructuredRepository;
     private AiClient aiClient;
     private MinioStorageService minioStorageService;
+    private CvRawJsonRepository cvRawJsonRepository;
+    private ObjectMapper objectMapper;
 
     @Override
     public Page<CvFileSummary> getPaginatedCvFiles(Pageable pageable) {
@@ -174,6 +179,11 @@ public class CvServiceImpl implements CvService {
             cvFile.setImageUrl(fileNameUrl);
             cvFile.setAddedDate(LocalDate.now());
             cvFile.setCvStructured(structured);
+            CvRawJson cvRawJson = new CvRawJson(this.convertToJson(result));
+            cvFile.setCvRawJson(cvRawJson);
+
+            cvRawJsonRepository.save(cvRawJson);
+
 
             return cvFileRepository.save(cvFile);
         }
@@ -224,6 +234,15 @@ public class CvServiceImpl implements CvService {
             }
         }
         return imageFiles;
+    }
+
+    private String convertToJson(Map<String, Object> map) {
+        try {
+            return objectMapper.writeValueAsString(map); // compact version
+            // return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map); // pretty version
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert map to JSON string", e);
+        }
     }
 
 

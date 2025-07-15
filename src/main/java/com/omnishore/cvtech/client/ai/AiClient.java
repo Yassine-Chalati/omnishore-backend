@@ -27,4 +27,28 @@ public class AiClient {
 
         return new RestTemplate().postForEntity("http://69.62.106.98:6600/cv", request, Map.class);
     }
+
+    public ResponseEntity<Map> matchCvsWithJobDescriptionFile(File jobDescriptionFile, String cvRawJson) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("fiche_poste_file", new FileSystemResource(jobDescriptionFile));
+        body.add("file", cvRawJson);
+
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
+
+        return new RestTemplate().postForEntity("http://69.62.106.98:6600/match/file", request, Map.class);
+    }
+
+    public ResponseEntity<Map> matchCvsWithJobDescriptionPrompt(String jobDescriptionPrompt, String cvRawJson) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("fiche_poste_text", jobDescriptionPrompt);
+        body.add("file", cvRawJson);
+
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
+
+        return new RestTemplate().postForEntity("http://69.62.106.98:6600/match/prompt", request, Map.class);
+    }
 }

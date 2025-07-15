@@ -1,5 +1,6 @@
 package com.omnishore.cvtech.domain.entities;
 
+import com.omnishore.cvtech.commons.enums.JobDescriptionType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,27 +10,19 @@ import java.util.List;
 
 @Entity
 @Data
-public class CvFile {
-
+public class JobDescription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    private String fileName;
-    @Lob
     private LocalDate addedDate;
-    @Lob
-    private String fileType;
-    @Lob
-    private String imageUrl;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private CvStructured cvStructured;
+    @Enumerated(EnumType.STRING)
+    private JobDescriptionType type;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private CvRawJson  cvRawJson;
+    private String fileName;
+    private String content;
 
-    @OneToMany(mappedBy = "cvFile", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "jobDescription", cascade = CascadeType.ALL)
     private List<Matching> matchings = new ArrayList<>();
 }
