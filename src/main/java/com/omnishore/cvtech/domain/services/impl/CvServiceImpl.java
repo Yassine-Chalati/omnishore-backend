@@ -47,7 +47,7 @@ public class CvServiceImpl implements CvService {
     }
 
     @Override
-    public CvStructured getById(long id) {
+    public CvStructured getCVStructuredByCvFileId(long id) {
         return cvFileRepository.findById(id).get().getCvStructured();
     }
 

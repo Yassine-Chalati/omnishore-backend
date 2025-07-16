@@ -1,11 +1,9 @@
 package com.omnishore.cvtech.controllers;
 
-import com.omnishore.cvtech.domain.entities.CvFile;
 import com.omnishore.cvtech.domain.entities.JobDescription;
-import com.omnishore.cvtech.domain.services.CvService;
 import com.omnishore.cvtech.domain.services.JobDescriptionService;
 import com.omnishore.cvtech.domain.services.MinioStorageService;
-import com.omnishore.cvtech.dtos.projections.CvFileSummary;
+import com.omnishore.cvtech.dtos.projections.JobDescriptionSummary;
 import com.omnishore.cvtech.mappers.JobDescriptionMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -31,10 +29,11 @@ public class JobDescriptionController {
     private final JobDescriptionService jobDescriptionService;
     private final MinioStorageService minioStorageService;
     private final JobDescriptionMapper jobDescriptionMapper;
-    @PostMapping("/upload")
+
+    @PostMapping("/upload/file")
     public ResponseEntity<?> uploadJobDescriptionFile(@RequestParam("file") MultipartFile file) {
         try {
-            JobDescription jobDescription = jobDescriptionService.uploadJobDescription(file);
+            JobDescription jobDescription = jobDescriptionService.uploadJobDescriptionFile(file);
             return ResponseEntity.ok(jobDescriptionMapper.toDto(jobDescription));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -42,15 +41,16 @@ public class JobDescriptionController {
         }
     }
 
-//    @GetMapping("/all")
-//    public Page<CvFileSummary> getPaginatedCvFiles(Pageable pageable) {
-//        return cvService.getPaginatedCvFiles(pageable);
-//    }
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<?> getPaginatedCvFiles(@PathVariable Long id) {
-//        return ResponseEntity.ok(cvService.getById(id));
-//    }
+    @PostMapping("/upload/prompt")
+    public ResponseEntity<?> uploadJobDescriptionPrompt(@RequestBody String prompt) {
+        try {
+            JobDescription jobDescription = jobDescriptionService.uploadJobDescriptionPrompt(prompt);
+            return ResponseEntity.ok(jobDescriptionMapper.toDto(jobDescription));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload one or more CVs: " + e.getMessage());
+        }
+    }
 
 
     @GetMapping("/download/{key}")
@@ -70,5 +70,21 @@ public class JobDescriptionController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + key + "\"")
                 .body(resource);
+    }
+
+    @GetMapping("/all")
+    public Page<JobDescriptionSummary> getPaginatedJobDescription(Pageable pageable) {
+        return jobDescriptionService.getPaginatedJobDescription(pageable);
+    }
+
+    @GetMapping("/matches/{jobDescriptionId}")
+    public ResponseEntity<?> getJobDescriptionById(@PathVariable long jobDescriptionId) {
+        try {
+            JobDescription jobDescription = jobDescriptionService.getJobDescriptionById(jobDescriptionId);
+            return ResponseEntity.ok(jobDescriptionMapper.toDto(jobDescription).getMatchings());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload one or more CVs: " + e.getMessage());
+        }
     }
 }

@@ -13,7 +13,7 @@ import java.io.IOException;
 public interface CvService {
     Page<CvFileSummary> getPaginatedCvFiles(Pageable pageable);
 
-    CvStructured getById(long id);
+    CvStructured getCVStructuredByCvFileId(long id);
 
     Page<CvFileSummary> getFilteredPaginatedCvFiles(Pageable pageable, CvFileFilter filter);
 

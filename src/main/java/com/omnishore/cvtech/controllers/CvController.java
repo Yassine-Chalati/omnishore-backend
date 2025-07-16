@@ -48,8 +48,8 @@ public class CvController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPaginatedCvFiles(@PathVariable Long id) {
-        return ResponseEntity.ok(cvService.getById(id));
+    public ResponseEntity<?> getCVStructuredByCvFileId(@PathVariable Long id) {
+        return ResponseEntity.ok(cvService.getCVStructuredByCvFileId(id));
     }
 
 
